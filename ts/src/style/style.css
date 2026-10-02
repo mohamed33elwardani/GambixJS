@@ -1,0 +1,356 @@
+:root {
+  --bg-primary: #0f1115;
+  --board-border: #1e222b;
+  --square-light-color: #ebecd0;
+  --square-dark-color: #739552;
+  --square-light-image: none;
+  --square-dark-image: none;
+  --square-light-glow: rgba(235, 236, 208, 0.15);
+  --square-dark-glow: rgba(115, 149, 82, 0.15);
+  --text-color: #f3f4f6;
+  --coord-light-color: #739552;
+  --coord-dark-color: #ebecd0;
+  --coord-color: #64748b;
+}
+.gambix-root {
+  position: relative;
+  width: fit-content;
+  height: fit-content;
+  font-family:
+    "Plus Jakarta Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+  color: var(--text-color);
+}
+.gambix-root .gambix-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: visible;
+  min-width: var(--board-size, 600px);
+}
+.gambix-root .gambix-board {
+  aspect-ratio: 1;
+  width: var(--board-size, 600px);
+  height: var(--board-size, 600px);
+  background-color: var(--board-border);
+  position: relative;
+  z-index: 1;
+}
+.gambix-root .squares-container {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+.gambix-root .pieces-container {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+.gambix-root .pieces-container img {
+  position: absolute;
+  cursor: grab;
+  touch-action: none;
+  pointer-events: auto;
+  user-select: none;
+  z-index: 10;
+
+  width: 100%;
+  height: 100%;
+}
+.gambix-root .square {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2.8rem;
+  user-select: none;
+  cursor: default;
+  transition: filter 0.2s ease;
+  position: relative;
+  box-sizing: border-box;
+  overflow: visible;
+}
+.gambix-root .square.white-square {
+  background:
+    var(--square-light-image) center / cover no-repeat,
+    var(--square-light-color);
+}
+.gambix-root .square.black-square {
+  background:
+    var(--square-dark-image) center / cover no-repeat,
+    var(--square-dark-color);
+}
+.gambix-root .square.white-square.img {
+  background-image: var(--square-light-image);
+  background-size: cover;
+  background-position: center;
+}
+.gambix-root .square.black-square.img {
+  background-image: var(--square-dark-image);
+  background-size: cover;
+  background-position: center;
+}
+.gambix-root .square:hover {
+  filter: brightness(1.08);
+  z-index: 10;
+}
+.gambix-root .square.white-square:hover {
+  box-shadow: inset 0 0 20px var(--square-light-glow);
+}
+.gambix-root .square.black-square:hover {
+  box-shadow: inset 0 0 20px var(--square-dark-glow);
+}
+.gambix-root .piece {
+  position: absolute;
+  display: block;
+  margin: 0;
+  padding: 0;
+  cursor: grab;
+  z-index: 10;
+  transform-style: preserve-3d;
+}
+.gambix-root .piece-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  pointer-events: none;
+  line-height: 1;
+}
+.gambix-root .piece-fallback[data-color="white"] {
+  color: #f8fafc;
+  text-shadow: 0 0 3px #000, 0 1px 2px #000;
+}
+.gambix-root .piece-fallback[data-color="black"] {
+  color: #111827;
+  text-shadow: 0 0 3px #fff, 0 1px 2px rgba(255,255,255,.6);
+}
+.gambix-root .is-dragging {
+  pointer-events: none;
+  filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.5));
+  z-index: 30 !important;
+}
+.gambix-root .square.dragging {
+  z-index: 30 !important;
+  position: relative;
+}
+.gambix-root .coord {
+  position: absolute;
+  font-size: 12px;
+  z-index: 11;
+  pointer-events: none;
+}
+.gambix-root .coord.dark {
+  color: var(--coord-dark-color);
+}
+.gambix-root .coord.light {
+  color: var(--coord-light-color);
+}
+.gambix-root .square .coord {
+  position: absolute !important;
+  font-weight: 700;
+  opacity: 0.85;
+  user-select: none;
+}
+.gambix-root .square .file-coord {
+  bottom: 4px;
+  right: 6px;
+}
+.gambix-root .square .rank-coord {
+  top: 4px;
+  left: 6px;
+}
+.gambix-root .board-container {
+  position: relative;
+  width: max-content;
+  height: max-content;
+  margin: 0 auto;
+}
+
+.gambix-root .board-container.coords-outside {
+  display: grid;
+  grid-template-columns: 20px var(--board-size);
+  grid-template-rows: var(--board-size) 20px;
+}
+.gambix-root .coord-rank-container {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100%;
+  width: 100%;
+}
+.gambix-root .coord-fill-container {
+  grid-column: 2;
+  grid-row: 2;
+  display: flex !important;
+  flex-direction: row !important;
+  width: 100%;
+  height: 100%;
+}
+.gambix-root .gambix-board {
+  grid-column: 2;
+  grid-row: 1;
+}
+.gambix-root .coord-rank-container .coord,
+.gambix-root .coord-fill-container .coord {
+  position: static !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 1 1 0% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  font-weight: bold;
+  font-size: 14px;
+  color: var(--coord-color);
+  text-align: center;
+}
+.gambix-root .highlight-lastmove-start,
+.gambix-root .highlight-lastmove-end,
+.gambix-root .highlight-check,
+.gambix-root .highlight-selected-square,
+.gambix-root .highlight-checkmate-winner,
+.gambix-root .highlight-checkmate-loser,
+.gambix-root .highlight-square {
+  position: relative;
+}
+.gambix-root .highlight-lastmove-start::after,
+.gambix-root .highlight-lastmove-end::after,
+.gambix-root .highlight-check::after,
+.gambix-root .highlight-selected-square::after,
+.gambix-root .highlight-checkmate-winner::after,
+.gambix-root .highlight-checkmate-loser::after,
+.gambix-root .highlight-square::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+.gambix-root .highlight-lastmove-start::after,
+.gambix-root .highlight-lastmove-end::after {
+  background: var(--highlight-lastmove-bg);
+}
+.gambix-root .highlight-check::after {
+  background: var(--highlight-check-bg);
+}
+.gambix-root .highlight-selected-square::after {
+  background: var(--highlight-selected-bg);
+}
+.gambix-root .highlight-checkmate-winner::after {
+  background: var(--highlight-checkmate-winner-bg);
+}
+.gambix-root .highlight-checkmate-loser::after {
+  background: var(--highlight-checkmate-loser-bg);
+}
+.gambix-root .highlight-square::after {
+  background-color: var(--highlight-color);
+}
+.gambix-root .highlight-legalmove-ring {
+  position: relative;
+}
+.gambix-root .highlight-legalmove-ring::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 var(--highlight-legalmove-ring-size, 4px)
+    var(--highlight-legalmove-color);
+  pointer-events: none;
+  z-index: 1;
+}
+.gambix-root .highlight-legalmove-dot {
+  position: relative;
+}
+.gambix-root .highlight-legalmove-dot::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--highlight-legalmove-dot-size, 12px);
+  height: var(--highlight-legalmove-dot-size, 12px);
+  background-color: var(--highlight-legalmove-color);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+}
+.gambix-root .arrows-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.gambix-root .promotion-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 50;
+  backdrop-filter: blur(1px);
+}
+.gambix-root .promotion-panel,
+.gambix-root .gambix-promotion-panel {
+  position: absolute;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+}
+.gambix-root .promotion-panel.gambix-promotion-panel {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 8px;
+}
+.gambix-root .promotion-option {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    transform 0.12s ease;
+  position: relative;
+}
+.gambix-root .promotion-option:hover {
+  background: rgba(50, 104, 168, 0.18) !important;
+  transform: scale(1.02);
+  z-index: 1;
+  box-shadow: inset 0 0 0 2px rgba(59, 130, 246, 0.35);
+}
+.gambix-root .promotion-option:active {
+  transform: scale(0.98);
+}
+.gambix-root .promotion-image {
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.22));
+}
