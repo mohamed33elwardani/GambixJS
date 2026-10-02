@@ -1,0 +1,27 @@
+{
+  "name": "gambixjs",
+  "description": "GAMBIXJS — dependency-free chessboard UI library (drag/click, arrows, highlights, promotion, animations, plugins)",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/bundle.js",
+  "module": "dist/bundle.js",
+  "scripts": {
+    "build": "esbuild ts/index.ts --bundle --outfile=dist/bundle.js --minify --format=esm",
+    "prepublishOnly": "npm run build",
+    "dev": "esbuild ts/index.ts --bundle --outfile=dist/bundle.js --format=esm --watch",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "files": [
+    "dist",
+    "docs"
+  ],
+  "devDependencies": {
+    "@changesets/changelog-github": "^0.5.1",
+    "@changesets/cli": "^3.0.3",
+    "esbuild": "^0.28.0",
+    "jsdom": "^30.1.0",
+    "vite": "^7.2.4",
+    "vitest": "^2.1.9"
+  }
+}
