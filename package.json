@@ -1,7 +1,7 @@
 {
   "name": "gambixjs",
   "description": "GAMBIXJS — dependency-free chessboard UI library (drag/click, arrows, highlights, promotion, animations, plugins)",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "type": "module",
   "main": "dist/bundle.js",
   "module": "dist/bundle.js",
