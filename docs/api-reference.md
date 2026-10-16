@@ -41,7 +41,7 @@ off(); // unsubscribe
 | Method     | Signature                                        | Description                                                      |
 | ---------- | ------------------------------------------------ | ---------------------------------------------------------------- |
 | `getFEN`   | `() => string`                                   | Current FEN                                                      |
-| `loadFEN`  | `(fen: string) => boolean`                       | Load a new position with diff animation. `false` for invalid FEN. Reloading the current FEN is a silent no-op (no redraw, no `fen-changed`) |
+| `loadFEN`  | `(fen: string) => boolean`                       | Load a new position with diff animation. Validation covers the piece-placement field only; `false` for an invalid placement. Reloading the current FEN is a silent no-op (no redraw, no `fen-changed`) |
 | `getBoard` | `() => Array<{ square, piece: string \| null }>` | All 64 squares                                                   |
 | `getPiece` | `(square: string) => { type, color } \| null`    | Piece on a given square                                          |
 

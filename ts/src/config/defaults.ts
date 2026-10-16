@@ -127,9 +127,9 @@ export const DEFAULT_CONFIG: DefaultConfig = {
   animations: {
     enabled: true,
 
-    move: { duration: 800, easing: "ease-in-out" },
-    capture: { duration: 280, easing: "ease-in-out" },
-    spawn: { duration: 120, easing: "ease-in" },
+    move: { duration: 300, easing: "ease-in-out" },
+    capture: { duration: 200, easing: "ease-in-out" },
+    spawn: { duration: 200, easing: "ease-in" },
     snapback: { duration: 150, easing: "ease-out" },
 
     autoSpeed: true,

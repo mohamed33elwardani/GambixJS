@@ -28,8 +28,23 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Run Unit Tests
+        run: npm test
+
       - name: Build Library
         run: npm run build
+
+      - name: Verify Consumer Package
+        run: npm run test:package
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Browser Tests
+        run: npm run test:browser
 
       - name: Create Release Pull Request or Publish
         id: changesets

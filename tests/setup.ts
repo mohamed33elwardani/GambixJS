@@ -85,6 +85,7 @@ interface MockAnimation {
   finished: Promise<void>;
   finish(): void;
   cancel(): void;
+  commitStyles(): void;
 }
 
 /**
@@ -109,6 +110,7 @@ function createMockAnimation(): MockAnimation {
       resolveFinished();
       anim.oncancel?.();
     },
+    commitStyles() {},
   };
   return anim;
 }

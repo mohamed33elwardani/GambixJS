@@ -68,14 +68,20 @@ class Gambix {
     const safeProps = props || {};
     this.eventBus = new EventBus<ChessEvents>();
 
-    this.theme = deepMerge(DEFAULT_CONFIG.theme, safeProps.theme || {});
+    this.theme = deepMerge(
+      structuredClone(DEFAULT_CONFIG.theme),
+      safeProps.theme || {},
+    );
     this.interactionSettings = deepMerge(
-      DEFAULT_CONFIG.interaction,
+      structuredClone(DEFAULT_CONFIG.interaction),
       safeProps.interaction || {},
     );
-    this.drawing = deepMerge(DEFAULT_CONFIG.drawing, safeProps.drawing || {});
+    this.drawing = deepMerge(
+      structuredClone(DEFAULT_CONFIG.drawing),
+      safeProps.drawing || {},
+    );
     this.highlights = deepMerge(
-      DEFAULT_CONFIG.highlights,
+      structuredClone(DEFAULT_CONFIG.highlights),
       safeProps.highlights || {},
     );
 
@@ -86,7 +92,7 @@ class Gambix {
     this.fenStore = new FenStore(FEN);
 
     const animationConfig = deepMerge(
-      DEFAULT_CONFIG.animations,
+      structuredClone(DEFAULT_CONFIG.animations),
       safeProps.animations || {},
     );
 

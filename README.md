@@ -37,17 +37,42 @@ The library handles **rendering and interaction only** (render + drag / click + 
 
 ## Installation
 
+### 1. npm
 ```bash
 npm i gambixjs
 ```
 
-Or for development / building from source via GitHub repository ([mohamed33elwardani/GambixJS](https://github.com/mohamed33elwardani/GambixJS/tree/master)):
+### 2. jsDelivr CDN
+Use directly in HTML without any build step:
+
+```html
+<!-- Stylesheet -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gambixjs@1.1.0/dist/bundle.css" />
+
+<div id="chess"></div>
+
+<!-- ESM Module -->
+<script type="module">
+  import Gambix from "https://cdn.jsdelivr.net/npm/gambixjs@1.1.0/dist/bundle.js";
+
+  const board = new Gambix("#chess", {
+    fen: "start",
+    theme: { boardSize: 600, orientation: "white" },
+    interaction: { control: "both", moveMechanic: "both" },
+  });
+</script>
+```
+
+> **Tip:** You can omit the version (`https://cdn.jsdelivr.net/npm/gambixjs/dist/bundle.js` and `https://cdn.jsdelivr.net/npm/gambixjs/dist/bundle.css`) to always fetch the latest release.
+
+### 3. Build from Source
+For development or contributing via GitHub repository ([mohamed33elwardani/GambixJS](https://github.com/mohamed33elwardani/GambixJS/tree/master)):
 
 ```bash
 git clone https://github.com/mohamed33elwardani/GambixJS.git
 cd GambixJS
 npm install
-npm run build   # dist/bundle.js
+npm run build   # produces dist/bundle.js, dist/bundle.css, dist/index.d.ts
 npm run dev     # watch mode
 ```
 
@@ -57,27 +82,13 @@ Modern Bundler (Vite, Next.js, Webpack, etc.):
 
 ```js
 import Gambix from "gambixjs";
+import "gambixjs/style.css";
 
 const board = new Gambix("#chess", {
   fen: "start",
   theme: { boardSize: 600, orientation: "white" },
   interaction: { control: "both", moveMechanic: "both" },
 });
-```
-
-Browser via CDN / ESM:
-
-```html
-<div id="chess"></div>
-<script type="module">
-  import Gambix from "https://esm.sh/gambixjs";
-
-  const board = new Gambix("#chess", {
-    fen: "start",
-    theme: { boardSize: 600, orientation: "white" },
-    interaction: { control: "both", moveMechanic: "both" },
-  });
-</script>
 ```
 
 ## Connecting logic (summary)

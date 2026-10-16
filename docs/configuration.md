@@ -36,7 +36,7 @@ const board = new Gambix("#chess", {
 
 ## 1. `fen?: string`
 
-- `"start"` or a full FEN string. Default: the standard start position.
+- `"start"` or a FEN/placement string. Default: the standard start position. Gambix validates and reads only the piece-placement field; it does not validate turn, castling, en-passant, counters, or chess legality.
 - Default value: `rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1`
 - To change the position after creation, use `loadFEN()`, not the config.
 

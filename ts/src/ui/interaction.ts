@@ -44,6 +44,7 @@ const DRAG_MOVE_THRESHOLD = 4;
  * Used by: Gambix internal wiring, Interaction pointer flow.
  */
 class Interaction {
+  private static activeKeyboardOwner: Interaction | null = null;
   private element: HTMLElement;
   private boardRef: InteractionBoard;
   private boardWrapper: HTMLElement | null = null;
@@ -83,6 +84,7 @@ class Interaction {
     ) as HTMLElement | null;
 
     this.abortController = new AbortController();
+    Interaction.activeKeyboardOwner = this;
     this.bindAllEvents();
     this.refreshSquares();
   }
@@ -162,6 +164,8 @@ class Interaction {
     this.drawEndSquare = "";
     if (this.activePanelClone?.parentNode) this.activePanelClone.remove();
     this.activePanelClone = null;
+    if (Interaction.activeKeyboardOwner === this)
+      Interaction.activeKeyboardOwner = null;
   }
 
   // ==========================================
@@ -1048,12 +1052,32 @@ class Interaction {
    * Used by: Interaction bindAllEvents flow.
    */
   private setupKeyBoardHandlers(): void {
-    if (!this.abortController) return;
+    if (!this.boardWrapper || !this.abortController) return;
     const signal = this.abortController.signal;
+
+    const activate = (): void => {
+      Interaction.activeKeyboardOwner = this;
+    };
+
+    this.boardWrapper.addEventListener("pointerdown", activate, { signal });
+    this.boardWrapper.addEventListener("focusin", activate, { signal });
+
+    const isEditableTarget = (target: EventTarget | null): boolean => {
+      if (!(target instanceof HTMLElement)) return false;
+      return (
+        target.isContentEditable ||
+        target.matches("input, textarea, select, [contenteditable='true']")
+      );
+    };
 
     document.addEventListener(
       "keydown",
       (event) => {
+        if (
+          Interaction.activeKeyboardOwner !== this ||
+          isEditableTarget(event.target)
+        )
+          return;
         if (this.destroyed || event.repeat) return;
         if (this.activeKey === event.key) return;
         this.activeKey = event.key;
@@ -1064,7 +1088,12 @@ class Interaction {
 
     document.addEventListener(
       "keyup",
-      () => {
+      (event) => {
+        if (
+          Interaction.activeKeyboardOwner !== this ||
+          isEditableTarget(event.target)
+        )
+          return;
         if (this.destroyed) return;
         this.activeKey = "";
         this.eventBus.emit("interaction:key-up", "");

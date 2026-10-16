@@ -112,6 +112,116 @@ describe("BoardAnimator.renderSnapshot — promotion", () => {
   });
 });
 
+// Covers promotion when the pawn element is missing from the DOM registry.
+describe("BoardAnimator.renderSnapshot — promotion without pawn element", () => {
+  it("spawns the promoted piece instead of leaving the square empty", () => {
+    fixture = makeBoard({
+      animationsEnabled: false,
+      fen: "2k5/4P3/8/8/8/8/8/4K3 w - - 0 1",
+    });
+    const { board } = fixture;
+    board.removePieceElement("e7");
+
+    const store = new FenStore("2k5/4P3/8/8/8/8/8/4K3 w - - 0 1");
+    const next = store.setFen("2k1Q3/8/8/8/8/8/8/4K3 b - - 0 1")!;
+    board.applyFenDiff(next);
+
+    expect(board.getPieceElement("e7")).toBeNull();
+    expect(board.getPieceElement("e8")?.getAttribute("data-piece")).toBe("wq");
+  });
+});
+
+// Covers promotion captures with piece swap and captured-piece cleanup.
+describe("BoardAnimator.renderSnapshot — promotion capture", () => {
+  it("replaces both the pawn and the captured piece with the promoted piece", () => {
+    fixture = makeBoard({
+      animationsEnabled: false,
+      fen: "r6k/1P6/8/8/8/8/8/4K3 w - - 0 1",
+    });
+    const { board, bus, root } = fixture;
+    const ended: Array<{ from: string; to: string; isCapture: boolean }> = [];
+    bus.on("board:move-animated-end", (p) => ended.push(p));
+    expect(board.getPieceElement("a8")?.getAttribute("data-piece")).toBe("br");
+
+    const store = new FenStore("r6k/1P6/8/8/8/8/8/4K3 w - - 0 1");
+    const next = store.setFen("Q6k/8/8/8/8/8/8/4K3 b - - 0 1")!;
+    board.applyFenDiff(next);
+
+    expect(ended).toEqual([{ from: "b7", to: "a8", isCapture: true }]);
+    expect(board.getPieceElement("b7")).toBeNull();
+    const atA8 = root.querySelectorAll('.piece[data-square="a8"]');
+    expect(atA8).toHaveLength(1);
+    expect(atA8[0]?.getAttribute("data-piece")).toBe("wq");
+  });
+});
+
+// Covers queen materialization after the move duration when animated.
+describe("BoardAnimator.renderSnapshot — animated promotion", () => {
+  it("shows the pawn in flight, then swaps it for the promoted piece", () => {
+    vi.useFakeTimers();
+    try {
+      fixture = makeBoard({
+        animationsEnabled: true,
+        fen: "2k5/4P3/8/8/8/8/8/4K3 w - - 0 1",
+      });
+      const { board, root } = fixture;
+      board.animator.options.autoSpeed = false;
+
+      const store = new FenStore("2k5/4P3/8/8/8/8/8/4K3 w - - 0 1");
+      const next = store.setFen("2k1Q3/8/8/8/8/8/8/4K3 b - - 0 1")!;
+      board.applyFenDiff(next);
+
+      expect(board.getPieceElement("e8")?.getAttribute("data-piece")).toBe(
+        "wp",
+      );
+
+      vi.advanceTimersByTime(1000);
+
+      const atE8 = root.querySelectorAll('.piece[data-square="e8"]');
+      expect(atE8).toHaveLength(1);
+      expect(atE8[0]?.getAttribute("data-piece")).toBe("wq");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});
+
+// Covers underpromotion and black-side promotion appearance.
+describe("BoardAnimator.renderSnapshot — promotion variants", () => {
+  it("spawns a knight on underpromotion", () => {
+    fixture = makeBoard({
+      animationsEnabled: false,
+      fen: "2k5/4P3/8/8/8/8/8/4K3 w - - 0 1",
+    });
+    const { board, root } = fixture;
+
+    const store = new FenStore("2k5/4P3/8/8/8/8/8/4K3 w - - 0 1");
+    const next = store.setFen("2k1N3/8/8/8/8/8/8/4K3 b - - 0 1")!;
+    board.applyFenDiff(next);
+
+    const atE8 = root.querySelectorAll('.piece[data-square="e8"]');
+    expect(atE8).toHaveLength(1);
+    expect(atE8[0]?.getAttribute("data-piece")).toBe("wn");
+  });
+
+  it("spawns a black rook on black pawn promotion", () => {
+    fixture = makeBoard({
+      animationsEnabled: false,
+      fen: "4k3/8/8/8/8/8/p7/4K3 b - - 0 1",
+    });
+    const { board, root } = fixture;
+
+    const store = new FenStore("4k3/8/8/8/8/8/p7/4K3 b - - 0 1");
+    const next = store.setFen("4k3/8/8/8/8/8/8/r3K3 w - - 0 1")!;
+    board.applyFenDiff(next);
+
+    expect(board.getPieceElement("a2")).toBeNull();
+    const atA1 = root.querySelectorAll('.piece[data-square="a1"]');
+    expect(atA1).toHaveLength(1);
+    expect(atA1[0]?.getAttribute("data-piece")).toBe("br");
+  });
+});
+
 // Covers Web Animations usage and cancelPending behavior.
 describe("BoardAnimator animation plumbing", () => {
   it("uses the Web Animations API when durations are enabled", () => {

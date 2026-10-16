@@ -367,20 +367,16 @@ describe("Gambix highlights API", () => {
     expect(game.getHighlights()).toEqual([]);
   });
 
-  it("legal move ratios and scale updates apply", () => {
+  it("legal move ratios and scale updates apply without mutating defaults", () => {
     const { game } = setupGame();
-    // setLegalMoveRatio mutates shared DEFAULT_CONFIG nesting, so restore it.
     const prevDot = DEFAULT_CONFIG.highlights.legalMoves.dotSize;
     const prevRing = DEFAULT_CONFIG.highlights.legalMoves.ringSize;
-    try {
-      expect(() => {
-        game.setLegalMoveRatio(0.2, 0.05);
-        game.updateLegalMoveScale();
-      }).not.toThrow();
-    } finally {
-      DEFAULT_CONFIG.highlights.legalMoves.dotSize = prevDot;
-      DEFAULT_CONFIG.highlights.legalMoves.ringSize = prevRing;
-    }
+    expect(() => {
+      game.setLegalMoveRatio(0.2, 0.05);
+      game.updateLegalMoveScale();
+    }).not.toThrow();
+    expect(DEFAULT_CONFIG.highlights.legalMoves.dotSize).toBe(prevDot);
+    expect(DEFAULT_CONFIG.highlights.legalMoves.ringSize).toBe(prevRing);
   });
 });
 
@@ -675,12 +671,14 @@ describe("Gambix highlight & placement events", () => {
 
 // Covers onKeyPressed/onKeyUp subscriptions.
 describe("Gambix keyboard events", () => {
-  it("onKeyPressed / onKeyUp forward document keys", () => {
+  it("onKeyPressed / onKeyUp forward keys only for the active board", () => {
     const { game } = setupGame();
     const pressed: string[] = [];
     const released: string[] = [];
     game.onKeyPressed((k) => pressed.push(k));
     game.onKeyUp((k) => released.push(k));
+    const squareEl = document.querySelector(".square[data-square='e2']")!;
+    squareEl.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Shift" }));
     document.dispatchEvent(new KeyboardEvent("keyup"));
     expect(pressed).toEqual(["Shift"]);

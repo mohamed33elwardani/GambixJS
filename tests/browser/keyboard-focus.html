@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="/dist/bundle.css" />
+  </head>
+  <body>
+    <div id="board-a"></div>
+    <div id="board-b"></div>
+    <input id="note" aria-label="Note" />
+    <output id="events-a"></output>
+    <output id="events-b"></output>
+    <script type="module">
+      import Gambix from "/dist/bundle.js";
+      const first = new Gambix("#board-a");
+      const second = new Gambix("#board-b");
+      first.onKeyPressed((key) => (document.querySelector("#events-a").textContent = key));
+      second.onKeyPressed((key) => (document.querySelector("#events-b").textContent = key));
+    </script>
+  </body>
+</html>

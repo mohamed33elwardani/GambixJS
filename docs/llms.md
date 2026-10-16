@@ -4,7 +4,7 @@
 
 ## 1. What Gambix is
 
-- Name: gambix, v1.0.0. Dependency-free chessboard UI library (ESM bundle: `dist/bundle.js`, built with esbuild from `ts/index.ts`).
+- Name: gambix, v1.1.0. Dependency-free chessboard UI library (ESM bundle: `dist/bundle.js`, built with esbuild from `ts/index.ts`).
 - UI ONLY: rendering, drag/click movement, arrows, highlights, promotion UI, animations, plugins. NO chess rules, NO legality checking, NO turn/check/mate logic.
 - Full game = Gambix (view) + external logic lib (e.g. chess.js, chessops). Gambix never validates moves by itself.
 - Repository: https://github.com/mohamed33elwardani/GambixJS/tree/master
@@ -16,8 +16,14 @@
 npm i gambixjs
 ```
 
+Or directly via jsDelivr CDN:
+- JS: `https://cdn.jsdelivr.net/npm/gambixjs@1.1.0/dist/bundle.js`
+- CSS: `https://cdn.jsdelivr.net/npm/gambixjs@1.1.0/dist/bundle.css`
+
 ```js
 import Gambix from "gambixjs";
+import "gambixjs/style.css";
+
 const board = new Gambix("#chess", {
   fen: "start",
   theme: { boardSize: 600, orientation: "white" },
@@ -32,7 +38,7 @@ board.destroy();
 
 ```ts
 type ChessOptions = {
-  fen?: string; // "start" | full FEN. default STANDARD_FEN
+  fen?: string; // "start" | FEN/placement string. The UI validates only the piece-placement field; chess rules and remaining FEN fields are not validated.
   theme?: {
     orientation?: "white" | "black";        // default "white"
     boardSize?: number;                     // default 600

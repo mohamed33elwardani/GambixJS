@@ -438,7 +438,12 @@ export default class Board {
         ? this.theme.pieces.assets.white
         : this.theme.pieces.assets.black;
     const pieceImage = assets[typeName as keyof PieceAssets];
-    if (!pieceImage) return null;
+    if (!pieceImage) {
+      console.warn(
+        `[Gambix] missing piece asset for "${pieceCode}" on "${squareName}".`,
+      );
+      return null;
+    }
 
     const span = document.createElement("span");
     span.className = "piece";

@@ -21,34 +21,60 @@ This guide takes you from zero to a working game.
 
 ## 1. Install and first render
 
+### Option A: npm (Modern Bundler)
+
 ```bash
 npm i gambixjs
 ```
 
-Or for development / building from source via [GitHub](https://github.com/mohamed33elwardani/GambixJS/tree/master):
+```js
+import Gambix from "gambixjs";
+import "gambixjs/style.css";
 
-```bash
-git clone https://github.com/mohamed33elwardani/GambixJS.git
-cd GambixJS
-npm install
-npm run build   # produces dist/bundle.js
+const board = new Gambix("#chess", {
+  fen: "start",
+  theme: { boardSize: 600, orientation: "white" },
+  interaction: { control: "both", moveMechanic: "both" },
+});
 ```
 
+### Option B: jsDelivr CDN (Zero-Build in Browser)
+
 ```html
+<!-- Stylesheet -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gambixjs@1.1.0/dist/bundle.css" />
+
 <div id="chess"></div>
+
+<!-- ESM Module -->
 <script type="module">
-  import Gambix from "gambixjs";
+  import Gambix from "https://cdn.jsdelivr.net/npm/gambixjs@1.1.0/dist/bundle.js";
 
   const board = new Gambix("#chess", {
-    fen: "start", // or a full FEN string; default is the standard start position
+    fen: "start", // or a FEN/placement string; default is the standard start position
     theme: { boardSize: 600, orientation: "white" },
     interaction: { control: "both", moveMechanic: "both" },
   });
 </script>
 ```
 
+> **Tip:** You can omit `@1.1.0` (using `https://cdn.jsdelivr.net/npm/gambixjs/dist/bundle.js` and `https://cdn.jsdelivr.net/npm/gambixjs/dist/bundle.css`) to always load the latest version.
+
+### Option C: Build from Source
+
+For development or contributing via [GitHub](https://github.com/mohamed33elwardani/GambixJS/tree/master):
+
+```bash
+git clone https://github.com/mohamed33elwardani/GambixJS.git
+cd GambixJS
+npm install
+npm run build   # produces dist/bundle.js, dist/bundle.css, dist/index.d.ts
+```
+
 - The first parameter is a **CSS selector** for an existing element. A missing element throws an `Error`.
 - The second parameter is the config object (fully documented in `configuration.md`).
+- For npm bundlers, remember to import the stylesheet: `import "gambixjs/style.css"`.
+- Gambix validates only the FEN **piece-placement** field because it is a UI library. Validate chess rules and the remaining FEN fields with your logic library.
 
 ## 2. Connecting chess.js (the official pattern)
 

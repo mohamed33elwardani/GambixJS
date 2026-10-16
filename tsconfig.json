@@ -1,10 +1,11 @@
 {
   // Visit https://aka.ms/tsconfig to read more about this file
-  "exclude": ["archive", "dist", "node_modules", "app"],
+  "include": ["ts/**/*.ts"],
+  "exclude": ["archive", "dist", "node_modules", "app", "tests", "scripts"],
   "compilerOptions": {
     // File Layout
     "rootDir": "./ts",
-    "outDir": "./app/dist",
+    "outDir": "./dist",
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module

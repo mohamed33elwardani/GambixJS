@@ -24,6 +24,7 @@ export default class BoardAnimator {
   private eventBus?: EventBus<ChessEvents>;
   private lastMoveTime = 0;
   private generation = 0;
+  private promoTimeouts = new Set<number>();
   public options: BoardAnimationOptions;
 
   /**
@@ -53,6 +54,8 @@ export default class BoardAnimator {
    */
   public cancelPending(): void {
     this.generation++;
+    for (const tid of this.promoTimeouts) window.clearTimeout(tid);
+    this.promoTimeouts.clear();
   }
 
   /**
@@ -161,10 +164,14 @@ export default class BoardAnimator {
     const duration = config.duration ?? 0;
 
     if (duration > 0) {
-      el.animate([{ opacity: 0 }, { opacity: 1 }], {
+      const anim = el.animate([{ opacity: 0 }, { opacity: 1 }], {
         duration,
         easing: config.easing ?? "ease-in",
       });
+      anim.onfinish = () => {
+        anim.commitStyles();
+        anim.cancel();
+      };
     }
   }
 
@@ -279,24 +286,38 @@ export default class BoardAnimator {
 
         const promoCapture = !!this.board.getPieceElement(newSq);
         if (promoCapture) this.discard(newSq);
+        const capturedInTarget = oldRemaining.get(newSq);
+        if (capturedInTarget && capturedInTarget !== newPiece)
+          matchedOld.add(newSq);
 
-        this.animatePieceMove(oldSq, newSq, promoCapture);
-        const dur = this.getEffectiveConfig("move").duration ?? 300;
-
+        const hasPawnEl = !!this.board.getPieceElement(oldSq);
+        let promoTid = 0;
         const replacePromo = (): void => {
+          if (promoTid) {
+            this.promoTimeouts.delete(promoTid);
+            promoTid = 0;
+          }
           if (gen !== this.generation) return;
           const el = this.board.getPieceElement(newSq);
-          if (!el || el.getAttribute("data-piece") !== `${newColor}p`) return;
-
-          this.board.removePieceElement(newSq);
-          el.remove();
-          this.spawn(newPiece, newSq);
+          if (el && el.getAttribute("data-piece") === `${newColor}p`) {
+            this.board.removePieceElement(newSq);
+            el.remove();
+          }
+          if (!this.board.getPieceElement(newSq)) this.spawn(newPiece, newSq);
+          if (!this.board.getPieceElement(newSq)) this.board.syncPieces();
         };
 
-        if (dur <= 0) {
+        if (!hasPawnEl) {
           replacePromo();
         } else {
-          window.setTimeout(replacePromo, dur);
+          this.animatePieceMove(oldSq, newSq, promoCapture);
+          const dur = this.getEffectiveConfig("move").duration ?? 300;
+          if (dur <= 0) {
+            replacePromo();
+          } else {
+            promoTid = window.setTimeout(replacePromo, dur);
+            this.promoTimeouts.add(promoTid);
+          }
         }
 
         matchedOld.add(oldSq);
